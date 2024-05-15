@@ -67,10 +67,31 @@ console.log(logo.src);
 console.log(logo.alt);
 console.log(logo.getAttribute("designer"));
 logo.setAttribute("Company", "Bankist");
-//Vlasses
+//Classes
 logo.classList.add("C");
 logo.classList.remove("C");
 logo.classList.toggle("C");
 logo.classList.contains("C");
 //over write al classes++
 //logo.className = "contaiiner"
+const btnScrollTo = document.querySelector(".btn--scroll-to");
+const section1 = document.querySelector("#section--1");
+btnScrollTo.addEventListener("click", function (e) {
+  const s1coords = section1.getBoundingClientRect();
+  console.log(s1coords);
+  console.log(e.target.getBoundingClientRect());
+  console.log(`Current Scroll (x/y)`, window.scrollX, window.scrollY);
+  console.log(
+    `Height/Width`,
+    document.documentElement.clientHeight,
+    document.documentElement.clientWidth
+  );
+  // scrolling in Old Version
+  // window.scrollTo({
+  //   left: s1coords.left + window.pageXOffset,
+  //   top: s1coords.top + window.pageYOffset,
+  //   behavior: "smooth",
+  // });
+  // Scrolling in Modern Version
+  section1.scrollIntoView({ behavior: "smooth" });
+});
