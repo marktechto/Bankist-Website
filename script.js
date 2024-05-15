@@ -95,3 +95,37 @@ btnScrollTo.addEventListener("click", function (e) {
   // Scrolling in Modern Version
   section1.scrollIntoView({ behavior: "smooth" });
 });
+//  E V E N T        H A N D L E R
+const h1 = document.querySelector("h1");
+const allertH1 = () => {
+  alert("Great You Click h1");
+  setTimeout(() => h1.removeEventListener("mouseenter", allertH1), 4000 * 60);
+};
+h1.addEventListener("mouseenter", allertH1);
+
+//  E/V/E/N/T/B/U/B/B/L/I/N/G/
+//rgb(255,255,255)
+const randomInt = (min, max) => Math.floor(Math.random() * max - min + 1) + min;
+const randomColor = () =>
+  `rgb(${randomInt(0, 255)},${randomInt(0, 255)},${randomInt(0, 255)})`;
+console.log(randomColor());
+
+document.querySelector(".nav__link").addEventListener("click", function (e) {
+  this.style.backgroundColor = randomColor();
+  console.log("nav--link", e.target, e.currentTarget);
+  console.log(e.currentTarget === this);
+  // stopPrppagation
+  //   e.stopPropagation();
+});
+document.querySelector(".nav__link").addEventListener("click", function (e) {
+  this.style.backgroundColor = randomColor();
+  console.log("nav--links", e.target, e.currentTarget);
+});
+document.querySelector(".nav").addEventListener(
+  "click",
+  function (e) {
+    this.style.backgroundColor = randomColor();
+    console.log("nav", e.target, e.currentTarget);
+  },
+  true
+);
