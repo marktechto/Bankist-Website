@@ -3,6 +3,10 @@
 // Modal window
 const header = document.querySelector(".header");
 const nav = document.querySelector(".nav");
+const allSections = document.querySelectorAll(".section");
+const section1 = document.querySelector("#section--1");
+const allButtons = document.getElementsByTagName("button");
+const message = document.createElement("div");
 const modal = document.querySelector(".modal");
 const overlay = document.querySelector(".overlay");
 const btnCloseModal = document.querySelector(".btn--close-modal");
@@ -30,19 +34,7 @@ document.addEventListener("keydown", function (e) {
   }
 });
 
-// Navigation Page
-// document.querySelectorAll(".nav__link").forEach(function (el) {
-//   el.addEventListener("click", function (e) {
-//     e.preventDefault();
-// const id = e.target.getAttribute("href");
-//     const id = this.getAttribute("href");
-//     console.log(id);
-//     document.querySelector(id).scrollIntoView({
-//       behavior: "smooth",
-//     });
-//   });
-// });
-//      EVENT DELEGATION ??  ???? ???????????
+//   EVENT DELEGATION ??  ???? ???????????
 document.querySelector(".nav__links").addEventListener("click", function (e) {
   e.preventDefault();
   if (e.target.classList.contains("nav__link")) {
@@ -52,8 +44,6 @@ document.querySelector(".nav__links").addEventListener("click", function (e) {
     });
   }
 });
-// DOM TRAVERSING
-// Go DownWards
 const h1 = document.querySelector("h1");
 console.log(h1.querySelectorAll(".highlight"));
 // console.log(h1.childNodes);
@@ -98,21 +88,151 @@ const handleHover = function (e) {
   }
 };
 // Passing an Argument
+//???? ????? ???? ?????/  ///////
 nav.addEventListener("mouseout", handleHover.bind(1));
 nav.addEventListener("mouseover", handleHover.bind(0.5));
-// Advannced DOM MSNUPULATION
+//|||||||||||||||||||||||||||||||||||||||||
+//Adding Sticky Navigation
+// const intialcoords = section1.getBoundingClientRect();
+// console.log(intialcoords);
+// window.addEventListener("scroll", function () {
+//   if (window.scrollY > intialcoords.top) {
+//     nav.classList.add("sticky");
+//   } else {
+//     nav.classList.remove("sticky");
+//   }
+// });
+//||||||||||||||||||||||||||||||||
+// Stciky navigation Interesection Server
+const navHeight = nav.getBoundingClientRect().height;
+const stickyMov = function (entries) {
+  entries.forEach((entry) => {
+    if (!entry.isIntersecting) {
+      nav.classList.add("sticky");
+    } else {
+      nav.classList.remove("sticky");
+    }
+  });
+};
+const observHeader = new IntersectionObserver(stickyMov, {
+  root: null,
+  threshold: 0,
+  rootMargin: `-${navHeight}px`,
+});
+observHeader.observe(header);
 
+//|||||||||||||||| REveal Section||||||||||||||||
+const revealSection = function (entries, observer) {
+  const [entry] = entries;
+  if (!entry.isIntersecting) return;
+  entry.target.classList.remove("section--hidden");
+};
+
+const sectionObserver = new IntersectionObserver(revealSection, {
+  root: null,
+  threshold: 0.1,
+});
+allSections.forEach((section) => {
+  sectionObserver.observe(section);
+  // section.classList.add("section--hidden");
+});
+// Lazy Loading images
+const imgTargets = document.querySelectorAll("img[data-src]");
+const loadImg = function (entries, observer) {
+  const [entry] = entries;
+  console.log(entry);
+  if (!entry.isIntersecting) return;
+  entry.target.src = entry.target.dataset.src;
+  entry.target.addEventListener("load", function () {
+    entry.target.classList.remove("lazy-img");
+  });
+  observer.unobserve(entry.target);
+};
+const imgObserver = new IntersectionObserver(loadImg, {
+  root: null,
+  threshold: 0,
+  rootMargin: "200px",
+});
+imgTargets.forEach((img) => imgObserver.observe(img));
+
+// S L I D E R
+const slider = function () {
+  const slides = document.querySelectorAll(".slide");
+  const slider = document.querySelector(".slider");
+  const dotContainer = document.querySelector(".dots");
+  const btnLeft = document.querySelector(".slider__btn--left");
+  const btnRight = document.querySelector(".slider__btn--right");
+  let curSlide = 0;
+  const maxSlide = slides.length;
+
+  // slider.style.transform = "scale(0.4) translateX(-800px)";
+  // slider.style.overflow = "visible";
+  const createDots = function () {
+    slides.forEach(function (_, i) {
+      dotContainer.insertAdjacentHTML(
+        "beforeend",
+        `<button class="dots__dot" data-slide="${i}"></button>`
+      );
+    });
+  };
+  createDots();
+  const activateDot = function (slide) {
+    document
+      .querySelectorAll(".dots__dot")
+      .forEach((dot) => dot.classList.remove("dots__dot--active"));
+    document
+      .querySelector(`.dots__dot[data-slide = "${slide}"]`)
+      .classList.add("dots__dot--active");
+  };
+
+  const goToSlide = function (slide) {
+    slides.forEach((s, i) => {
+      s.style.transform = `translateX(${100 * (i - slide)}%)`;
+    });
+  };
+
+  const nextSlide = function () {
+    if (curSlide === maxSlide - 1) {
+      curSlide = 0;
+    } else {
+      curSlide++;
+    }
+    goToSlide(curSlide);
+    activateDot(curSlide);
+  };
+  const prevSlide = function () {
+    if (curSlide === 0) {
+      curSlide = maxSlide - 1;
+    } else {
+      curSlide--;
+    }
+    goToSlide(curSlide);
+    activateDot(curSlide);
+  };
+  const init = function () {
+    goToSlide(0);
+    activateDot(0);
+  };
+  init();
+  btnRight.addEventListener("click", nextSlide);
+  btnLeft.addEventListener("click", prevSlide);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowLeft") prevSlide();
+    e.key === "ArrowRight" && nextSlide();
+  });
+  dotContainer.addEventListener("click", function (e) {
+    if (e.target.classList.contains("dots__dot")) {
+      const { slide } = e.target.dataset;
+      goToSlide(slide);
+      activateDot(slide);
+    }
+  });
+};
+slider();
+// Advannced DOM MSNUPULATION
 console.log(document.documentElement);
 console.log(document.head);
 console.log(document.body);
-const allSections = document.querySelectorAll(".section");
-console.log(allSections);
-document.getElementById("section--1");
-const allButtons = document.getElementsByTagName("button");
-console.log(allButtons);
-console.log(document.getElementsByName("btn"));
-// creating and inserting
-const message = document.createElement("div");
 message.classList.add("cookie-message");
 message.textContent = "We use cookie for improved functionality and analytics";
 message.innerHTML = `We use cookie for improved functionality and analytics.<button class="btn btn--close--cookie">Got it</button>`;
@@ -197,3 +317,6 @@ document
 //   this.style.backgroundColor = randomColor();
 //   console.log("nav", e.target, e.currentTarget);
 // });
+document.addEventListener("DOMContentLoaded", function (e) {
+  console.log("HTML PArsed", e);
+});
